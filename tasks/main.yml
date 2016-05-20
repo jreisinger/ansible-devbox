@@ -1,0 +1,79 @@
+- name: install deb packages
+  apt: name={{ item }} update_cache=yes cache_valid_time=7200
+  with_items:
+    - git
+    - vim
+    - perltidy
+    - screen
+    - wget
+    - cpio
+    - cpanminus
+    - make
+    - gcc
+    - libpithub-perl
+    - libssl-dev
+    - python-jinja2
+
+- name: create OS user
+  user: name={{ os_user }} shell=/bin/bash groups=sudo,admin append=yes generate_ssh_key=yes
+
+- name: upload /etc/sudoers
+  template: src=sudoers.j2 dest=/etc/sudoers mode=0440
+
+- name: cp SSH authorized keys to new user's ~/.ssh
+  command: cp -p /home/ubuntu/.ssh/authorized_keys /home/{{ os_user }}/.ssh/
+
+- name: set onwership and mode for ~/.ssh
+  file: path=/home/{{ os_user }}/.ssh owner={{ os_user }} group={{ os_user }} mode=0700
+
+- name: clone ... dot files manager
+  git: repo=git://github.com/ingydotnet/....git dest=/home/{{ os_user }}/...
+
+- name: configure ...
+  template: src=conf.j2 dest=/home/{{ os_user }}/.../conf
+
+- name: create directories in home
+  file: path=/home/{{ os_user }}/{{ item }} state=directory
+  with_items:
+    - bin
+    - github-repos
+
+- name: symlink ... to bin
+  file: src=/home/{{ os_user }}/.../bin/... dest=/home/{{ os_user }}/bin/... state=link
+
+- name: copy script for adding SSH key to GitHub
+  template: src=github_add_key.j2 dest=/home/{{ os_user }}/bin/github_add_key mode=0700
+
+- name: disable SSH host key checking
+  copy: src=ssh-config dest=/home/{{ os_user }}/.ssh/config owner={{ os_user }} group={{ os_user }}
+
+- name: set onwership for ~ recursively
+  file: path=/home/{{ os_user }} owner={{ os_user }} group={{ os_user }} recurse=yes
+
+- name: install GitMeta
+  cpanm: name=GitMeta notest=True
+
+- block:
+
+  - name: run script for adding SSH key to GitHub
+    command: /home/{{ os_user }}/bin/github_add_key
+
+  - name: update and install (i.e. upgrade) dotfiles
+    command: /home/{{ os_user }}/.../bin/... upgrade
+    tags:
+      - update_my_env
+
+  - name: install vim stuff
+    command: /home/{{ os_user }}/bin/install_vim_stuff
+    tags:
+      - update_my_env
+
+  - name: clone my GitHub repos
+    command: gitmeta-update git://github.com/jreisinger/gitmeta {{ item.repos }}.gmf ~/{{ item.dir }}
+    with_items:
+      - { repos: 'github-repos', dir: 'github-repos' }
+    tags:
+      - update_my_env
+
+  become: true
+  become_user: "{{ os_user }}"

@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Pithub::Users::Keys;
+
+my $key;
+my $keyfile = "$ENV{HOME}/.ssh/id_rsa.pub";
+open(my $fh, $keyfile) or die "can't read SSH key from $keyfile: $!";
+{
+        local $/;
+        $key = <$fh>;
+}
+close($fh);
+
+my $k = Pithub::Users::Keys->new( token => '{{ github_token }}' );
+my $result = $k->create(
+        data => {
+                title => '{{ os_user }}@{{ ansible_fqdn }}',
+                key   => $key,
+        }
+);
