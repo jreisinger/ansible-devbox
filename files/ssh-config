@@ -1,2 +1,2 @@
-Host *
-StrictHostKeyChecking no
+Host github.com
+    StrictHostKeyChecking no
