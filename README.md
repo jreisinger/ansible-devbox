@@ -31,7 +31,8 @@ Example Playbook
 
       vars:
         os_user: jreisinger
+        hostname: gandalf
         github_token: "{{ lookup('env','GITHUB_TOKEN') }}"
 
       roles:
-        - { role: devbox }
+        - { role: ansible-role-devbox }

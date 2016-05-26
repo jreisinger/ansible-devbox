@@ -16,6 +16,9 @@
     - libc6-dev
     - libexpat1-dev
 
+- name: set hostname
+  hostname: name={{ hostname }}
+
 - name: create OS user
   user: name={{ os_user }} shell=/bin/bash groups=sudo,admin append=yes generate_ssh_key=yes
 
