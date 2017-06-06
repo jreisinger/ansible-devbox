@@ -3,3 +3,4 @@ roles
 ansible.cfg
 playbook.yml
 Vagrantfile
+hosts
