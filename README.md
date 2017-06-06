@@ -26,7 +26,7 @@ You might need to change some defaults (e.g. when on cygwin) in `ansible.cfg`:
 Install the role
 ----------------
 
-    ansible-galaxy install -r requirements.yml -p ~/ansible-roles
+    ansible-galaxy install -r requirements.yml -p ./roles
 
 Example Playbook
 ----------------
