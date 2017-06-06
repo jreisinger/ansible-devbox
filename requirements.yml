@@ -1,0 +1,3 @@
+- src: https://github.com/jreisinger/ansible-role-devbox
+  version: master
+  name: ansible-role-devbox

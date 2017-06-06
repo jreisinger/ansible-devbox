@@ -3,8 +3,8 @@ devbox
 
 This role sets up my shell environment the way I like it.
 
-Requirements
-------------
+Prerequisites
+-------------
 
 Export the token from Github for adding SSH public key;
 
@@ -22,6 +22,11 @@ You might need to change some defaults (e.g. when on cygwin) in `ansible.cfg`:
     control_path = /tmp
     ssh_args = -o ControlMaster=no
     pipelining = True
+
+Install the role
+----------------
+
+    ansible-galaxy install -r requirements.yml -p ~/ansible-roles
 
 Example Playbook
 ----------------
